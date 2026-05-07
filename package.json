@@ -1,0 +1,6 @@
+{
+  "name": "fitbase-proxy",
+  "version": "1.0.0",
+  "description": "CORS proxy for Fitbase API",
+  "private": true
+}
