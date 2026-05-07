@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness CEO Advisor — Bronx Fitness</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;font-size:14px}
+.app{max-width:900px;margin:0 auto;padding:20px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:16px 20px;background:#fff;border-radius:12px;border:1px solid #e5e5e5}
+.logo{width:40px;height:40px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:20px}
+.title{font-size:18px;font-weight:600}
+.subtitle{font-size:12px;color:#666;margin-top:2px}
+.conn-status{margin-left:auto;font-size:12px;color:#666;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#ccc}
+.dot.ok{background:#16a34a}.dot.err{background:#dc2626}.dot.loading{background:#d97706}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:20px;margin-bottom:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+label{display:block;font-size:11px;color:#666;margin-bottom:4px;font-weight:500}
+input{width:100%;padding:8px 10px;border:1px solid #e0e0e0;border-radius:8px;font-size:13px;outline:none;background:#fff}
+input:focus{border-color:#3b82f6}
+.btn{padding:9px 18px;border-radius:8px;border:1px solid #e0e0e0;background:#fff;font-size:13px;cursor:pointer;font-weight:500}
+.btn-primary{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.btn-primary:hover{background:#1e40af}
+.btn-row{display:flex;gap:8px;align-items:center;margin-top:12px}
+.success{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px 14px;font-size:13px;color:#166534;margin-bottom:16px;display:none}
+.tabs{display:flex;gap:4px;margin-bottom:16px;background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:4px}
+.tab{flex:1;padding:8px;text-align:center;font-size:12px;border-radius:7px;cursor:pointer;color:#666;font-weight:500}
+.tab.active{background:#1d4ed8;color:#fff}
+.panel{display:none}.panel.active{display:block}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.metric{background:#f9fafb;border:1px solid #e5e5e5;border-radius:10px;padding:12px}
+.ml{font-size:11px;color:#666;margin-bottom:2px}
+.mv{font-size:24px;font-weight:700;color:#111}
+.ms{font-size:11px;color:#999;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:7px 10px;border-bottom:1px solid #e5e5e5;color:#666;font-weight:600;font-size:11px;text-transform:uppercase}
+td{padding:7px 10px;border-bottom:1px solid #f0f0f0}
+tr:hover td{background:#fafafa}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.b-ok{background:#dcfce7;color:#166534}
+.b-warn{background:#fef9c3;color:#854d0e}
+.b-err{background:#fee2e2;color:#991b1b}
+.b-info{background:#dbeafe;color:#1e40af}
+.chat-wrap{background:#f9fafb;border:1px solid #e5e5e5;border-radius:10px;padding:14px;min-height:250px;max-height:420px;overflow-y:auto;margin-bottom:10px}
+.msg{margin-bottom:12px}
+.msg-role{font-size:11px;font-weight:600;color:#666;margin-bottom:4px}
+.msg-body{font-size:13px;line-height:1.6}
+.msg-body.ai{background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:10px 12px}
+.input-row{display:flex;gap:8px}
+.input-row input{flex:1}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.qb{font-size:12px;padding:5px 12px;border-radius:20px;cursor:pointer;background:#f0f0f0;border:1px solid #e0e0e0;color:#444}
+.qb:hover{background:#e0e0e0}
+.loader{display:none;font-size:12px;color:#666;padding:6px 0}
+.loader.on{display:block}
+.empty{text-align:center;padding:30px;color:#999}
+.bar-wrap{display:flex;flex-direction:column;gap:12px}
+.bar-label{display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px}
+.bar-track{height:6px;background:#e5e5e5;border-radius:3px}
+.bar-fill{height:6px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">📊</div>
+    <div>
+      <div class="title">Fitness CEO Advisor</div>
+      <div class="subtitle">Bronx Fitness · Астана, Казахстан</div>
+    </div>
+    <div class="conn-status">
+      <span class="dot" id="dot"></span>
+      <span id="conn-text">не подключено</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:14px;font-weight:600;margin-bottom:14px">🔌 Подключение к Fitbase</div>
+    <div class="grid-2">
+      <div>
+        <label>Домен клуба</label>
+        <input type="text" id="domain" value="f38915" />
+      </div>
+      <div>
+        <label>Токен Fitbase API</label>
+        <input type="password" id="token" placeholder="Вставьте токен..." />
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="connect()">⚡ Подключить и загрузить данные</button>
+      <span class="loader" id="loader">⏳ загружаем данные из Fitbase...</span>
+    </div>
+  </div>
+
+  <div class="success" id="success">✅ Подключено! <span id="success-text"></span></div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('overview')">📊 Обзор</div>
+    <div class="tab" onclick="switchTab('clients')">👥 Клиенты</div>
+    <div class="tab" onclick="switchTab('contracts')">🎫 Абонементы</div>
+    <div class="tab" onclick="switchTab('leads')">🎯 Заявки</div>
+    <div class="tab" onclick="switchTab('staff')">💪 Сотрудники</div>
+    <div class="tab" onclick="switchTab('ai')">🤖 AI советник</div>
+  </div>
+
+  <div id="tab-overview" class="panel active">
+    <div class="metrics">
+      <div class="metric"><div class="ml">Клиентов</div><div class="mv" id="m-total">—</div><div class="ms">в базе</div></div>
+      <div class="metric"><div class="ml">Активных</div><div class="mv" id="m-active">—</div><div class="ms">статус 1</div></div>
+      <div class="metric"><div class="ml">В архиве</div><div class="mv" id="m-arch">—</div><div class="ms">отток</div></div>
+      <div class="metric"><div class="ml">Заявок</div><div class="mv" id="m-leads">—</div><div class="ms">в CRM</div></div>
+      <div class="metric"><div class="ml">Абонементов</div><div class="mv" id="m-contracts">—</div><div class="ms">продано</div></div>
+      <div class="metric"><div class="ml">Сотрудников</div><div class="mv" id="m-staff">—</div><div class="ms">активных</div></div>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Бенчмарки клуба</div>
+      <div class="bar-wrap" id="bars"><div class="empty">Загрузите данные для анализа</div></div>
+    </div>
+  </div>
+
+  <div id="tab-clients" class="panel">
+    <div class="card">
+      <div id="clients-info" style="font-size:12px;color:#666;margin-bottom:10px"></div>
+      <div id="clients-table"><div class="empty">Подключитесь к Fitbase</div></div>
+    </div>
+  </div>
+  <div id="tab-contracts" class="panel">
+    <div class="card">
+      <div id="contracts-info" style="font-size:12px;color:#666;margin-bottom:10px"></div>
+      <div id="contracts-table"><div class="empty">Подключитесь к Fitbase</div></div>
+    </div>
+  </div>
+  <div id="tab-leads" class="panel">
+    <div class="card">
+      <div id="leads-info" style="font-size:12px;color:#666;margin-bottom:10px"></div>
+      <div id="leads-table"><div class="empty">Подключитесь к Fitbase</div></div>
+    </div>
+  </div>
+  <div id="tab-staff" class="panel">
+    <div class="card">
+      <div id="staff-info" style="font-size:12px;color:#666;margin-bottom:10px"></div>
+      <div id="staff-table"><div class="empty">Подключитесь к Fitbase</div></div>
+    </div>
+  </div>
+
+  <div id="tab-ai" class="panel">
+    <div class="card">
+      <div class="quick">
+        <div class="qb" onclick="ask('Дай полный анализ клуба и топ-3 приоритета')">Полный анализ</div>
+        <div class="qb" onclick="ask('Проанализируй отток клиентов и предложи меры удержания')">Отток</div>
+        <div class="qb" onclick="ask('Оцени эффективность тренеров и загрузку')">Тренеры</div>
+        <div class="qb" onclick="ask('Анализ воронки продаж: конверсия и узкие места')">Воронка</div>
+        <div class="qb" onclick="ask('Как увеличить выручку клуба на следующий месяц?')">Рост выручки</div>
+        <div class="qb" onclick="ask('Топ-5 рисков для клуба прямо сейчас')">Риски</div>
+      </div>
+      <div class="chat-wrap" id="chat">
+        <div class="msg">
+          <div class="msg-role">🤖 Советник</div>
+          <div class="msg-body ai">Подключитесь к Fitbase — загружу данные Bronx Fitness и проведу полный анализ. Или задайте вопрос прямо сейчас.</div>
+        </div>
+      </div>
+      <div class="loader" id="ai-loader">🤔 Анализирую...</div>
+      <div class="input-row">
+        <input type="text" id="q" placeholder="Вопрос директора..." onkeydown="if(event.key==='Enter')ask()" />
+        <button class="btn btn-primary" onclick="ask()">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SYSTEM=`Ты — Fitness CEO Advisor, AI-аналитик для директора фитнес-клуба Bronx Fitness (Астана, Казахстан). Анализируй реальные данные из CRM Fitbase. Давай конкретные рекомендации на русском языке.
+Структура ответа:
+📊 Анализ — факты и тренды
+⚠️ Проблемы — узкие места с критичностью
+✅ Рекомендации — конкретные шаги с KPI и сроками
+🎯 Приоритеты — топ-3 действия прямо сейчас
+Бенчмарки: Churn 5-8%/мес (тревога >12%), загрузка тренеров 70-85% (тревога <50%), ФОТ 28-35% (тревога >45%), конверсия лидов 30-50%, повторные продажи 60-75%.`;
+
+let S={clients:[],contracts:[],leads:[],staff:[],totalClients:0,totalContracts:0,totalLeads:0};
+let H=[];
+
+function setStatus(t,txt){
+  document.getElementById('dot').className='dot'+(t==='ok'?' ok':t==='err'?' err':t==='loading'?' loading':'');
+  document.getElementById('conn-text').textContent=txt;
+}
+
+async function fb(path,params={}){
+  const qs=new URLSearchParams({path,...params}).toString();
+  const r=await fetch(`/api/proxy?${qs}`,{headers:{'domain':document.getElementById('domain').value.trim(),'Authorization':'Bearer '+document.getElementById('token').value.trim()}});
+  return r.json();
+}
+
+async function connect(){
+  if(!document.getElementById('token').value.trim()){alert('Введите токен');return;}
+  document.getElementById('loader').className='loader on';
+  setStatus('loading','подключение...');
+  try{
+    const[cl,cn,ld,st]=await Promise.all([fb('v2/client',{page:1,page_size:100}),fb('v2/client-contract',{page:1,page_size:100}),fb('v2/lead',{page:1,page_size:100}),fb('v2/user',{page:1,page_size:100})]);
+    if(cl.items===undefined)throw new Error(cl.message||JSON.stringify(cl));
+    S.clients=cl.items||[];S.totalClients=cl.total_count||0;
+    S.contracts=cn.items||[];S.totalContracts=cn.total_count||0;
+    S.leads=ld.items||[];S.totalLeads=ld.total_count||0;
+    S.staff=st.items||[];
+    setStatus('ok','подключено · Bronx Fitness');
+    renderAll();
+    document.getElementById('success-text').textContent=`${S.totalClients.toLocaleString('ru')} клиентов · ${S.totalContracts.toLocaleString('ru')} абонементов · ${S.totalLeads.toLocaleString('ru')} заявок`;
+    document.getElementById('success').style.display='block';
+  }catch(e){setStatus('err','ошибка: '+e.message);alert('Ошибка: '+e.message);}
+  document.getElementById('loader').className='loader';
+}
+
+function renderAll(){
+  const active=S.clients.filter(c=>c.status===1).length;
+  const arch=S.clients.filter(c=>c.is_archive).length;
+  const activeStaff=S.staff.filter(u=>u.status===10).length;
+  document.getElementById('m-total').textContent=S.totalClients.toLocaleString('ru');
+  document.getElementById('m-active').textContent=active;
+  document.getElementById('m-arch').textContent=arch;
+  document.getElementById('m-leads').textContent=S.totalLeads.toLocaleString('ru');
+  document.getElementById('m-contracts').textContent=S.totalContracts.toLocaleString('ru');
+  document.getElementById('m-staff').textContent=activeStaff;
+  const ap=S.totalClients>0?Math.round(arch/S.totalClients*100):0;
+  const actp=S.clients.length>0?Math.round(active/S.clients.length*100):0;
+  document.getElementById('bars').innerHTML=
+    bar('Архивные клиенты (отток)',ap,'%',ap<=8?'#16a34a':ap<=12?'#d97706':'#dc2626','норма 5-8%')+
+    bar('Активные из загруженных',actp,'%',actp>=40?'#16a34a':'#d97706',`${active} из ${S.clients.length}`)+
+    bar('Оплаченных абонементов',S.contracts.length>0?Math.round(S.contracts.filter(c=>c.payment).length/S.contracts.length*100):0,'%','#3b82f6',`${S.contracts.filter(c=>c.payment).length} из ${S.contracts.length}`)+
+    bar('Активных сотрудников',S.staff.length>0?Math.round(activeStaff/S.staff.length*100):0,'%','#16a34a',`${activeStaff} из ${S.staff.length}`);
+  tbl('clients-table','clients-info',S.clients.slice(0,100),S.totalClients,[
+    {h:'Клиент',f:c=>`${c.surname||''} ${c.name||''}`.trim()||'—'},
+    {h:'Телефон',f:c=>c.contacts?.find(x=>x.contact_type==='phone')?.contact||'—'},
+    {h:'Статус',f:c=>{const m={1:'активен',2:'заморожен',3:'нет абон.',5:'пробный',6:'архив'};const cl={1:'b-ok',2:'b-info',3:'b-warn',5:'b-info',6:'b-err'};return`<span class="badge ${cl[c.status]||'b-warn'}">${m[c.status]||c.status}</span>`}},
+    {h:'Менеджер',f:c=>c.manager?.full_name?.split(' ')[0]||'—'}
+  ],'клиентов');
+  tbl('contracts-table','contracts-info',S.contracts.slice(0,100),S.totalContracts,[
+    {h:'Абонемент',f:c=>c.ticket?.contract_item?.name||c.contract_name||'—'},
+    {h:'Цена',f:c=>c.price?Math.round(c.price).toLocaleString('ru')+' ₸':'—'},
+    {h:'Оплата',f:c=>c.payment?'<span class="badge b-ok">оплачен</span>':'<span class="badge b-warn">не оплачен</span>'},
+    {h:'До',f:c=>c.end_date?c.end_date.slice(0,10):'—'}
+  ],'абонементов');
+  tbl('leads-table','leads-info',S.leads.slice(0,100),S.totalLeads,[
+    {h:'Имя',f:l=>`${l.surname||''} ${l.name||''}`.trim()||'—'},
+    {h:'Телефон',f:l=>l.phone||'—'},
+    {h:'Этап',f:l=>`<span class="badge b-info">${l.funnel_step?.name||'—'}</span>`},
+    {h:'Источник',f:l=>l.advertising_source?.name||'—'}
+  ],'заявок');
+  tbl('staff-table','staff-info',S.staff.slice(0,100),S.staff.length,[
+    {h:'Имя',f:u=>u.full_name||`${u.surname||''} ${u.name||''}`.trim()||'—'},
+    {h:'Должность',f:u=>u.function_name||'—'},
+    {h:'Статус',f:u=>u.status===10?'<span class="badge b-ok">активен</span>':'<span class="badge b-err">уволен</span>'},
+    {h:'Email',f:u=>u.email||'—'}
+  ],'сотрудников');
+}
+
+function bar(label,val,unit,color,hint){
+  return`<div><div class="bar-label"><span>${label}</span><span style="font-weight:600">${val}${unit} <span style="color:#999;font-weight:400">${hint}</span></span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(val,100)}%;background:${color}"></div></div></div>`;
+}
+
+function tbl(id,infoId,items,total,cols,label){
+  document.getElementById(infoId).textContent=`${total.toLocaleString('ru')} ${label}, показано ${items.length}`;
+  if(!items.length){document.getElementById(id).innerHTML='<div class="empty">Нет данных</div>';return;}
+  let h='<div style="overflow-x:auto"><table><thead><tr>';
+  cols.forEach(c=>h+=`<th>${c.h}</th>`);
+  h+='</tr></thead><tbody>';
+  items.forEach(row=>{h+='<tr>';cols.forEach(c=>h+=`<td>${c.f(row)}</td>`);h+='</tr>';});
+  h+='</tbody></table></div>';
+  document.getElementById(id).innerHTML=h;
+}
+
+function switchTab(t){
+  ['overview','clients','contracts','leads','staff','ai'].forEach((id,i)=>{
+    document.getElementById('tab-'+id).classList.toggle('active',id===t);
+    document.querySelectorAll('.tab')[i].classList.toggle('active',id===t);
+  });
+}
+
+function buildCtx(){
+  const active=S.clients.filter(c=>c.status===1).length;
+  const arch=S.clients.filter(c=>c.is_archive).length;
+  const paid=S.contracts.filter(c=>c.payment).length;
+  const activeStaff=S.staff.filter(u=>u.status===10).length;
+  return`Данные Bronx Fitness (Астана):
+- Клиентов: ${S.totalClients.toLocaleString('ru')}, активных: ${active}, в архиве: ${arch}
+- Заявок: ${S.totalLeads.toLocaleString('ru')}, этапы: ${[...new Set(S.leads.map(l=>l.funnel_step?.name).filter(Boolean))].slice(0,5).join(', ')||'нет'}
+- Абонементов: ${S.totalContracts.toLocaleString('ru')}, оплаченных: ${paid}
+- Сотрудников активных: ${activeStaff} из ${S.staff.length}`;
+}
+
+async function ask(q){
+  const inp=document.getElementById('q');
+  const text=q||inp.value.trim();
+  if(!text)return;
+  inp.value='';
+  addMsg('user',text);
+  switchTab('ai');
+  const ctx=S.clients.length?buildCtx():'';
+  H.push({role:'user',content:ctx?`[Данные клуба]\n${ctx}\n\n[Вопрос]\n${text}`:text});
+  document.getElementById('ai-loader').className='loader on';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:SYSTEM,messages:H})});
+    const d=await r.json();
+    const reply=d.content?.find(b=>b.type==='text')?.text||'Нет ответа';
+    document.getElementById('ai-loader').className='loader';
+    addMsg('assistant',reply);
+    H.push({role:'assistant',content:reply});
+    if(H.length>20)H=H.slice(-20);
+  }catch(e){document.getElementById('ai-loader').className='loader';addMsg('assistant','Ошибка: '+e.message);}
+}
+
+function addMsg(role,text){
+  const area=document.getElementById('chat');
+  const div=document.createElement('div');
+  div.className='msg';
+  div.innerHTML=`<div class="msg-role">${role==='user'?'👤 Директор':'🤖 Советник'}</div><div class="msg-body${role==='assistant'?' ai':''}">${text.replace(/\n/g,'<br>')}</div>`;
+  area.appendChild(div);
+  area.scrollTop=area.scrollHeight;
+}
+</script>
+</body>
+</html>
